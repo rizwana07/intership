@@ -1,0 +1,105 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+public class studentgradetracker {
+    public static void main(String[] args) {
+        ArrayList<Integer> grades = new ArrayList<>();
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
+        System.out.println("=== Student Grade Tracker ===");
+        while (running) {
+            System.out.println("\nMenu:");
+            System.out.println("1. Add Grade");
+            System.out.println("2. View All Grades");
+            System.out.println("3. Compute Average Grade");
+            System.out.println("4. Find Highest Grade");
+            System.out.println("5. Find Lowest Grade");
+            System.out.println("6. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            switch (choice) {
+                case 1:
+                    addGrade(grades, scanner);
+                    break;
+                case 2:
+                    viewGrades(grades);
+                    break;
+                case 3:
+                    computeAverage(grades);
+                    break;
+                case 4:
+                    findHighestGrade(grades);
+                    break;
+                case 5:
+                    findLowestGrade(grades);
+                    break;
+                case 6:
+                    System.out.println("Exiting the program. Goodbye!");
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+        scanner.close();
+    }
+    // Method to add a grade
+    private static void addGrade(ArrayList<Integer> grades, Scanner scanner) {
+        System.out.print("\nEnter the student's grade (0-100): ");
+        int grade = scanner.nextInt();
+        if (grade < 0 || grade > 100) {
+            System.out.println("Invalid grade. Please enter a value between 0 and 100.");
+        } else {
+            grades.add(grade);
+            System.out.println("Grade added successfully.");
+        }
+    }
+    // Method to view all grades
+    private static void viewGrades(ArrayList<Integer> grades) {
+        if (grades.isEmpty()) {
+            System.out.println("\nNo grades have been entered.");
+        } else {
+            System.out.println("\nGrades: " + grades);
+        }
+    }
+    // Method to compute the average grade
+    private static void computeAverage(ArrayList<Integer> grades) {
+        if (grades.isEmpty()) {
+            System.out.println("\nNo grades available to compute the average.");
+            return;
+        }
+        int sum = 0;
+        for (int grade : grades) {
+            sum += grade;
+        }
+        double average = (double) sum / grades.size();
+        System.out.println("\nThe average grade is: " + String.format("%.2f", average));
+    }
+    // Method to find the highest grade
+    private static void findHighestGrade(ArrayList<Integer> grades) {
+        if (grades.isEmpty()) {
+            System.out.println("\nNo grades available to find the highest grade.");
+            return;
+        }
+        int highest = grades.get(0);
+        for (int grade : grades) {
+            if (grade > highest) {
+                highest = grade;
+            }
+        }
+        System.out.println("\nThe highest grade is: " + highest);
+    }
+    // Method to find the lowest grade
+    private static void findLowestGrade(ArrayList<Integer> grades) {
+        if (grades.isEmpty()) {
+            System.out.println("\nNo grades available to find the lowest grade.");
+            return;
+        }
+        int lowest = grades.get(0);
+        for (int grade : grades) {
+            if (grade < lowest) {
+                lowest = grade;
+            }
+        }
+        System.out.println("\nThe lowest grade is: " + lowest);
+    }
+}

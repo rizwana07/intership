@@ -1,0 +1,164 @@
+import java.util.*;
+import java.util.regex.*;
+public class Travelplanner {
+    static class Destination {
+        String name;
+        String date;
+        String weather;
+        double estimatedCost;
+        Destination(String name, String date, String weather, double estimatedCost) {
+            this.name = name;
+            this.date = date;
+            this.weather = weather;
+            this.estimatedCost = estimatedCost;
+        }
+
+        @Override
+        public String toString() {
+            return "Destination: " + name +
+                    "\nDate: " + date +
+                    "\nWeather: " + weather +
+                    "\nEstimated Cost: $" + estimatedCost;
+        }
+    }
+
+    static List<Destination> destinations = new ArrayList<>();
+    // Valid weather options
+    private static final List<String> VALID_WEATHER = Arrays.asList("Sunny", "Rainy", "Cloudy", "Windy", "Snowy");
+    // Method to add a destination
+    public static void addDestination(String name, String date, String weather, double estimatedCost) {
+        Destination destination = new Destination(name, date, weather, estimatedCost);
+        destinations.add(destination);
+    }
+    // Method to validate the date format (YYYY-MM-DD)
+    public static boolean isValidDate(String date) {
+        // Check if the date matches the YYYY-MM-DD format
+        String regex = "^(\\d{4})-(\\d{2})-(\\d{2})$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(date);
+        if (!matcher.matches()) {
+            return false; // If it doesn't match the format, return false
+        }
+        // Further validation for month and day ranges
+        int month = Integer.parseInt(matcher.group(2));
+        int day = Integer.parseInt(matcher.group(3));
+        if (month < 1 || month > 12) {
+            return false; // Invalid month
+        }
+        // Check if day is valid for the given month
+        if (day < 1 || day > 31) {
+            return false; // Invalid day
+        }
+        // Handle months with fewer days
+        if (month == 4 || month == 6 || month == 9 || month == 11) {
+            if (day > 30) {
+                return false; // Invalid day for these months
+            }
+        }
+        // Handle February (February has 28 or 29 days depending on the year)
+        if (month == 2) {
+            int year = Integer.parseInt(matcher.group(1));
+            if (isLeapYear(year)) {
+                if (day > 29) {
+                    return false; // Invalid day for February in a leap year
+                }
+            } else {
+                if (day > 28) {
+                    return false; // Invalid day for February in a non-leap year
+                }
+            }
+        }
+        return true; // If all checks pass, the date is valid
+    }
+    // Method to check if a year is a leap year
+    public static boolean isLeapYear(int year) {
+        return (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
+    }
+    // Method to validate the weather condition
+    public static boolean isValidWeather(String weather) {
+        return VALID_WEATHER.contains(weather);
+    }
+    // Method to validate if the cost is a positive number
+    public static boolean isValidCost(String costStr) {
+        try {
+            double cost = Double.parseDouble(costStr);
+            return cost >= 0; // Cost must be a non-negative number
+        } catch (NumberFormatException e) {
+            return false; // If it's not a valid number, return false
+        }
+    }
+    // Method to validate the destination name (no numbers allowed)
+    public static boolean isValidDestinationName(String name) {
+        // Check if the name contains only letters and spaces (no digits)
+        return name.matches("^[A-Za-z ]+$");
+    }
+    // Method to display the full itinerary
+    public static void displayItinerary() {
+        System.out.println("\nYour Travel Itinerary:");
+        double totalCost = 0;
+        for (int i = 0; i < destinations.size(); i++) {
+            System.out.println("\nDay " + (i + 1) + ":");
+            System.out.println(destinations.get(i));
+            totalCost += destinations.get(i).estimatedCost;
+        }
+        System.out.println("\nTotal Estimated Cost: $" + totalCost);
+    }
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Welcome to the Travel Itinerary Planner!");
+        System.out.print("How many destinations do you want to add? ");
+        int numDestinations = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+        for (int i = 0; i < numDestinations; i++) {
+            System.out.println("\nEnter details for destination " + (i + 1) + ":");
+            // Validate destination name (no numbers)
+            String name;
+            while (true) {
+                System.out.print("Name of the destination: ");
+                name = scanner.nextLine();
+                if (isValidDestinationName(name)) {
+                    break;
+                } else {
+                    System.out.println("Invalid destination name. Please enter a name without numbers.");
+                }
+            }
+            // Validate date format
+            String date;
+            while (true) {
+                System.out.print("Date of visit (YYYY-MM-DD): ");
+                date = scanner.nextLine();
+                if (isValidDate(date)) {
+                    break;
+                } else {
+                    System.out.println("Invalid date format. Please enter the date in YYYY-MM-DD format.");
+                }
+            }
+            // Validate weather input
+            String weather;
+            while (true) {
+                System.out.print("Expected weather (Sunny, Rainy, Cloudy, Windy, Snowy): ");
+                weather = scanner.nextLine();
+                if (isValidWeather(weather)) {
+                    break;
+               }else{
+                 System.out.println("Invalid weather condition. Please choose from Sunny, Rainy, Cloudy, Windy, or Snowy.");
+                }
+            }
+            // Validate cost (positive number and non-numeric input)
+            double cost;
+            while (true) {
+                System.out.print("Estimated cost for this destination: $");
+                String costStr = scanner.nextLine();
+                if (isValidCost(costStr)) {
+                    cost = Double.parseDouble(costStr);
+                    break;
+                } else {
+                    System.out.println("Invalid cost. Please enter a positive number.");
+                }
+            }
+            addDestination(name, date, weather, cost);
+        }
+        displayItinerary();
+        scanner.close();
+    }
+}
